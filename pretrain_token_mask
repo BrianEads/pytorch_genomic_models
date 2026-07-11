@@ -1,0 +1,70 @@
+import torch
+import random
+from itertools import product
+
+# --- 1. Vocabulary and Tokenizer Setup ---
+def build_kmer_vocabulary(k, special_tokens=['[PAD]', '[UNK]', '[CLS]', '[SEP]', '[MASK]']):
+    """Creates a vocabulary for k-mers and special tokens."""
+    bases = ['A', 'C', 'G', 'T']
+    kmers = [''.join(p) for p in product(bases, repeat=k)]
+    vocab = {token: i for i, token in enumerate(special_tokens + kmers)}
+    return vocab
+
+def seq_to_kmer_ids(seq, k, vocab):
+    """Converts a DNA sequence into a list of k-mer token IDs."""
+    kmers = [seq[i:i+k] for i in range(len(seq) - k + 1)]
+    # In a real application, you'd add [CLS] and [SEP] here
+    # tokenized_kmers = ['[CLS]'] + kmers + ['[SEP]']
+    return [vocab.get(token, vocab['[UNK]']) for token in kmers]
+
+# --- 2. Masking Implementation ---
+def mask_tokens(token_ids, vocab, mask_prob=0.15):
+    """
+    Prepares masked inputs and labels for MLM: 80% MASK, 10% random, 10% original.
+    Labels are set to -100 for non-masked tokens to be ignored by the loss function.
+    """
+    inputs = torch.tensor(token_ids, dtype=torch.long)
+    labels = inputs.clone()
+
+    # Probability matrix for selecting tokens to mask
+    prob_matrix = torch.full(labels.shape, mask_prob)
+    
+    # Determine which tokens to mask (ignoring special tokens if they were present)
+    masked_indices = torch.bernoulli(prob_matrix).bool()
+    labels[~masked_indices] = -100  # We only compute loss on masked tokens
+
+    # 80% of masked tokens are replaced with [MASK]
+    indices_replaced = torch.bernoulli(torch.full(labels.shape, 0.8)).bool() & masked_indices
+    inputs[indices_replaced] = vocab['[MASK]']
+
+    # 10% of masked tokens are replaced with a random token
+    # We take 50% of the remaining 20% of masked tokens
+    indices_random = torch.bernoulli(torch.full(labels.shape, 0.5)).bool() & masked_indices & ~indices_replaced
+    
+    # Generate random words, excluding special tokens
+    num_special_tokens = 5 # Assuming the 5 standard special tokens
+    random_words = torch.randint(num_special_tokens, len(vocab), labels.shape, dtype=torch.long)
+    inputs[indices_random] = random_words[indices_random]
+
+    # The remaining 10% are left unchanged implicitly.
+    return inputs, labels
+
+# --- 3. Example Usage ---
+K = 6
+DNA_SEQUENCE = "ACGTAGCTAGCTAGCTACGATCGATCGATCGATACGATCGATCG"
+kmer_vocab = build_kmer_vocabulary(K)
+
+# a. Tokenize the sequence
+original_ids = seq_to_kmer_ids(DNA_SEQUENCE, K, kmer_vocab)
+print(f"Original sequence has {len(original_ids)} {K}-mer tokens.")
+
+# b. Apply masking
+masked_inputs, labels = mask_tokens(original_ids, kmer_vocab)
+
+print("\nOriginal Token IDs (first 15):\n", torch.tensor(original_ids)[:15])
+print("\nMasked Input IDs (first 15):\n", masked_inputs[:15])
+print("\nLabels (first 15, -100 means not masked):\n", labels[:15])
+
+# The `masked_inputs` tensor is fed to the Transformer.
+# The model's output logits are compared against the `labels` tensor
+# using CrossEntropyLoss, which conveniently ignores the -100 entries.
