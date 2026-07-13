@@ -49,7 +49,7 @@ class PPIGraphTower(nn.Module):
         if GCNConv is None:
             raise ImportError(
                 "torch_geometric is required for PPIGraphTower. "
-                "Install with: pip install torch_geometric"
+                "Install with: pip install torch-geometric"
             )
 
         self.d_model = d_model
@@ -86,6 +86,7 @@ class PPIGraphTower(nn.Module):
             )
 
         node_features, _ = self.esm_tower.encode_nodes(protein_token_ids)
+        graph.x = node_features
         return node_features
 
     def forward(

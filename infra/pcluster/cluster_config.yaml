@@ -65,11 +65,15 @@ SharedStorage:
 CustomActions:
   OnNodeStart:
     Script: custom_actions/on_node_start.sh
-    Args:
-      - !Ref EfsDns
-      - !Ref S3DatasetBucket
   OnNodeConfigured:
     Script: custom_actions/on_node_configured.sh
+
+Environment:
+  EFS_DNS: !Ref EfsDns
+  S3_DATASET_BUCKET: !Ref S3DatasetBucket
+  S3_RAW_PREFIX: !Ref S3RawPrefix
+  S3_TOKENISED_PREFIX: !Ref S3TokenisedPrefix
+  S3_MANIFESTS_PREFIX: !Ref S3ManifestsPrefix
 
 Parameters:
   KeyPairName:

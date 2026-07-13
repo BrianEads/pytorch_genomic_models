@@ -86,6 +86,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Pre-train a single midgut modality tower.")
     parser.add_argument("--config", required=True, help="Path to tower YAML config.")
     parser.add_argument("--epochs", type=int, default=None, help="Override config epochs.")
+    parser.add_argument("--checkpoint-dir", default=None, help="Directory to save checkpoints (overrides config output_dir).")
     parser.add_argument("--log-wandb", action="store_true", help="Log to Weights & Biases.")
     args = parser.parse_args()
 
@@ -163,7 +164,7 @@ def main() -> None:
 
                 mlflow.log_metric("loss", mean_loss, step=epoch)
             save_checkpoint(
-                config.get("output_dir", "checkpoints/tower"),
+                args.checkpoint_dir or config.get("output_dir", "checkpoints/tower"),
                 epoch,
                 mean_loss,
                 model.state_dict(),

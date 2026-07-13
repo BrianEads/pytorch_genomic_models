@@ -63,6 +63,10 @@ class CrossAttentionFusion(nn.Module):
         Returns:
             Fused embedding, optionally with attention weights ``(B, M, M)``.
         """
+        if not embeddings:
+            raise ValueError(
+                "CrossAttentionFusion requires at least one modality embedding."
+            )
         # Stack modalities: (B, M, d_model) where M = number of modalities.
         stacked = torch.stack(embeddings, dim=1)
         attended, attn_weights = self.attention(stacked, stacked, stacked, need_weights=True)

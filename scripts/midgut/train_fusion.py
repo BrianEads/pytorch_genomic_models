@@ -71,6 +71,7 @@ def main() -> None:
     """Parse CLI args and train fusion over available manifest modalities."""
     parser = argparse.ArgumentParser(description="Train the midgut fusion head.")
     parser.add_argument("--config", required=True, help="Path to fusion YAML config.")
+    parser.add_argument("--checkpoint-dir", default=None, help="Directory to save checkpoints (overrides config output_dir).")
     parser.add_argument("--log-wandb", action="store_true", help="Log to Weights & Biases.")
     args = parser.parse_args()
 
@@ -134,7 +135,7 @@ def main() -> None:
                     graph = Data(edge_index=edge_index, x=None)
                     token_ids = torch.randint(0, 20, (32, 64), device=device)
                     emb, _ = tower(graph, protein_token_ids=token_ids)
-                    emb = emb.unsqueeze(0).expand(batch, -1)
+                    emb = emb.expand(batch, -1)
                 except ImportError:
                     emb = torch.randn(batch, d_model, device=device)
             else:
@@ -147,8 +148,9 @@ def main() -> None:
         optimizer.step()
 
         if local_rank == 0:
+            checkpoint_dir = args.checkpoint_dir or config.get("output_dir", "checkpoints/fusion")
             save_checkpoint(
-                config.get("output_dir", "checkpoints/fusion"),
+                checkpoint_dir,
                 epoch,
                 float(loss.item()),
                 fusion.state_dict(),
