@@ -10,4 +10,4 @@ phases:
           commands:
             - source /opt/miniconda/etc/profile.d/conda.sh
             - conda activate pytorch-genomic
-            - pip install transformers fair-esm peft scanpy torch_geometric mlflow optuna h5py biopython
+            - pip install transformers fair-esm peft scanpy torch-geometric mlflow optuna h5py biopython
