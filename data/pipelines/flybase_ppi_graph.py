@@ -86,11 +86,14 @@ def build_pyg_data(edges: pd.DataFrame) -> Data:
 
     src = edges["gene_a"].map(gene_to_idx).to_numpy(dtype="int64")
     dst = edges["gene_b"].map(gene_to_idx).to_numpy(dtype="int64")
-    edge_index = torch.from_numpy(np.stack([src, dst]))
+    src_all = np.concatenate([src, dst])
+    dst_all = np.concatenate([dst, src])
+    edge_index = torch.from_numpy(np.stack([src_all, dst_all]))
 
     data = Data(edge_index=edge_index, num_nodes=len(genes))
     data.gene_id = genes.to_list()
-    data.edge_score = torch.tensor(edges["score"].to_numpy(dtype="float32"))
+    scores = edges["score"].to_numpy(dtype="float32")
+    data.edge_score = torch.tensor(np.concatenate([scores, scores]))
     return data
 
 
