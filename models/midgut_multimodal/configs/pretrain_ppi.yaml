@@ -1,0 +1,13 @@
+tower: ppi_graph
+d_model: 256
+num_gcn_layers: 2
+use_stub: true
+batch_size: 1
+learning_rate: 5.0e-5
+epochs: 50
+objective: link_prediction
+manifest_path: data/manifests/dmel_foundation_manifest.json
+required_modalities:
+  - ppi
+strict: false
+output_dir: checkpoints/ppi_pretrain

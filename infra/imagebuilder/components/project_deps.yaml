@@ -1,0 +1,13 @@
+name: project-deps
+description: Goal 2 and 3 Python dependencies
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallDeps
+        action: ExecuteBash
+        inputs:
+          commands:
+            - source /opt/miniconda/etc/profile.d/conda.sh
+            - conda activate pytorch-genomic
+            - pip install transformers fair-esm peft scanpy torch-geometric mlflow optuna h5py biopython

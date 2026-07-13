@@ -1,0 +1,28 @@
+d_fusion: 256
+batch_size: 64
+learning_rate: 1.0e-4
+epochs: 30
+early_stopping_patience: 5
+lr_schedule: cosine
+tasks:
+  ic50_regression:
+    enabled: true
+    loss: mse
+    metrics: [pearson_r, rmse]
+  resistance_classifier:
+    enabled: true
+    loss: bce
+    label_smoothing: 0.1
+    metrics: [auroc, pr_auc]
+  cry_candidate_scorer:
+    enabled: true
+    loss: multilabel_bce
+    n_labels: 4
+    metrics: [top_k_precision]
+  perturbation_predictor:
+    enabled: true
+    loss: kl_divergence
+    n_cell_types: 32
+    metrics: [spearman_r]
+manifest_path: data/manifests/dmel_foundation_manifest.json
+output_dir: checkpoints/downstream

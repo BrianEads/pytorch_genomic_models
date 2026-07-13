@@ -1,0 +1,13 @@
+tower: protein_esm2
+d_model: 256
+esm_model_name: esm2_t33_650M_UR50D
+use_lora: true
+lora_r: 16
+lora_alpha: 32
+max_length: 1024
+batch_size: 8
+learning_rate: 2.0e-5
+epochs: 10
+objective: cry_family_classification
+manifest_path: data/manifests/dmel_foundation_manifest.json
+output_dir: checkpoints/esm2_finetune

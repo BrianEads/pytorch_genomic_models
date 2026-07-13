@@ -1,0 +1,24 @@
+fusion: cross_attention
+d_model: 256
+d_fusion: 256
+n_heads: 4
+dropout: 0.1
+max_modalities: 5
+batch_size: 32
+learning_rate: 1.0e-4
+epochs: 20
+warmup_epochs: 5
+freeze_towers_epochs: 5
+gradient_accumulation_steps: 4
+mixed_precision: true
+manifest_path: data/manifests/dmel_foundation_manifest.json
+# v1 incremental: fuse whichever of genome / rnaseq / ppi are materialised.
+expected_modalities:
+  - genome
+  - rnaseq
+  - ppi
+tower_checkpoints:
+  genome: checkpoints/genome_pretrain/latest.pt
+  rnaseq: checkpoints/rnaseq_midgut_pretrain/latest.pt
+  ppi: checkpoints/ppi_pretrain/latest.pt
+output_dir: checkpoints/fusion_train_v1

@@ -6,9 +6,9 @@ from torch.utils.data import DataLoader, Dataset
 class GenomicDataset(Dataset):
     def __init__(self):
         self.data = [
-            torch.tensor([...](asc_slot://start-slot-222)),          # len 4
-            torch.tensor([...](asc_slot://start-slot-224)),             # len 3
-            torch.tensor([...](asc_slot://start-slot-226))    # len 6
+            torch.tensor([0, 1, 2, 3], dtype=torch.long),       # len 4
+            torch.tensor([0, 1, 2], dtype=torch.long),         # len 3
+            torch.tensor([0, 1, 2, 3, 2, 1], dtype=torch.long),  # len 6
         ]
     def __len__(self):
         return len(self.data)

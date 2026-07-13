@@ -1,0 +1,16 @@
+tower: genome_kmer_transformer
+d_model: 256
+vocab_size: 4101
+n_layers: 4
+n_heads: 8
+max_tokens: 512
+batch_size: 64
+learning_rate: 1.0e-4
+epochs: 20
+objective: masked_kmer
+mask_fraction: 0.15
+manifest_path: data/manifests/dmel_foundation_manifest.json
+required_modalities: []
+strict: false
+tissue_filter: null
+output_dir: checkpoints/genome_pretrain

@@ -1,0 +1,20 @@
+fusion: cross_attention
+d_model: 256
+d_fusion: 256
+n_heads: 4
+dropout: 0.1
+n_modalities: 5
+batch_size: 32
+learning_rate: 1.0e-4
+epochs: 20
+warmup_epochs: 5
+freeze_towers_epochs: 5
+gradient_accumulation_steps: 4
+mixed_precision: true
+tower_checkpoints:
+  scrna: checkpoints/scrna_pretrain/latest.pt
+  cell_painting: checkpoints/cell_painting_pretrain/latest.pt
+  popgen: checkpoints/popgen_pretrain/latest.pt
+  bt_screening: checkpoints/bt_screening_pretrain/latest.pt
+  protein: checkpoints/esm2_finetune/latest.pt
+output_dir: checkpoints/fusion_train

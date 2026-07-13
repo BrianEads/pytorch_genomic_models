@@ -1,0 +1,87 @@
+Region: us-east-1
+Image:
+  Os: alinux2
+  CustomAmi: !Sub "{{resolve:ssm:/bayer/pytorch-genomic/ami/gpu-training-latest}}"
+
+HeadNode:
+  InstanceType: m5.xlarge
+  Networking:
+    SubnetId: !Sub "{{resolve:ssm:/bayer/platform/networking/private_subnet_ids_az_a}}"
+  Ssh:
+    KeyName: !Ref KeyPairName
+
+Scheduling:
+  Scheduler: slurm
+  SlurmQueues:
+    - Name: train
+      CapacityType: SPOT
+      Networking:
+        SubnetIds:
+          - !Sub "{{resolve:ssm:/bayer/platform/networking/private_subnet_ids_az_a}}"
+          - !Sub "{{resolve:ssm:/bayer/platform/networking/private_subnet_ids_az_b}}"
+      ComputeResources:
+        - Name: p3-2xlarge
+          InstanceType: p3.2xlarge
+          MinCount: 0
+          MaxCount: 8
+          SpotPrice: "1.50"
+        - Name: p4d-24xlarge
+          InstanceType: p4d.24xlarge
+          MinCount: 0
+          MaxCount: 2
+          SpotPrice: "13.00"
+
+    - Name: sweep
+      CapacityType: SPOT
+      Networking:
+        SubnetIds:
+          - !Sub "{{resolve:ssm:/bayer/platform/networking/private_subnet_ids_az_a}}"
+          - !Sub "{{resolve:ssm:/bayer/platform/networking/private_subnet_ids_az_b}}"
+      ComputeResources:
+        - Name: p3-2xlarge-sweep
+          InstanceType: p3.2xlarge
+          MinCount: 0
+          MaxCount: 16
+          SpotPrice: "1.50"
+
+SharedStorage:
+  - Name: efs-data
+    StorageType: Efs
+    MountDir: /mnt/efs
+    EfsSettings:
+      FileSystemId: !Sub "{{resolve:ssm:/bayer/pytorch-genomic/efs/filesystem_id}}"
+
+CustomActions:
+  OnNodeStart:
+    Script: custom_actions/on_node_start.sh
+  OnNodeConfigured:
+    Script: custom_actions/on_node_configured.sh
+
+# Environment variables injected into custom action scripts
+# S3 bucket lives in the prod AWS account
+Environment:
+  EFS_DNS: !Ref EfsDns
+  S3_DATASET_BUCKET: !Ref S3DatasetBucket
+  S3_RAW_PREFIX: !Ref S3RawPrefix
+  S3_TOKENISED_PREFIX: !Ref S3TokenisedPrefix
+  S3_MANIFESTS_PREFIX: !Ref S3ManifestsPrefix
+
+Parameters:
+  KeyPairName:
+    Type: String
+    Default: ""
+  EfsDns:
+    Type: String
+    Default: ""
+  S3DatasetBucket:
+    Type: String
+    Default: cs-cp-bifx-pytorch-genomic-data
+  S3RawPrefix:
+    Type: String
+    Default: raw/
+  S3TokenisedPrefix:
+    Type: String
+    Default: tokenised/
+  S3ManifestsPrefix:
+    Type: String
+    Default: manifests/

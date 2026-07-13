@@ -20,7 +20,7 @@ logits_multi = torch.tensor([
     [3.2, -1.0, 0.5],  # Logits for residue 1 (class 0 is highest)
     [-0.8, 2.5, 0.1]   # Logits for residue 2 (class 1 is highest)
 ])
-true_labels_multi = torch.tensor([...](asc_slot://start-slot-228)) # The ground truth (as integers)
+true_labels_multi = torch.tensor([0, 1], dtype=torch.long)  # The ground truth (as integers)
 
 # CrossEntropyLoss is best for multi-class tasks.
 loss_fn_ce = nn.CrossEntropyLoss()

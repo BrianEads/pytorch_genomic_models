@@ -1,0 +1,13 @@
+tower: scrna_transformer
+d_model: 256
+n_layers: 6
+n_heads: 8
+vocab_size: 20000
+max_genes: 2048
+batch_size: 256
+learning_rate: 1.0e-4
+epochs: 50
+objective: masked_gene_expression
+mask_fraction: 0.15
+manifest_path: data/manifests/dmel_foundation_manifest.json
+output_dir: checkpoints/scrna_pretrain
