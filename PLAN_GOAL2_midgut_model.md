@@ -17,14 +17,18 @@ Design and implement a multi-modal deep learning model targeting **agricultural 
 The insect midgut is a highly regionalized epithelial organ that performs digestion, nutrient absorption, and immune sensing. In lepidopteran pests (*Spodoptera frugiperda*, *Helicoverpa armigera*, *Plutella xylostella*) and dipterans (*Aedes aegypti*, *Culex pipiens*), the midgut epithelium is the primary target of crystal (Cry) and vegetative insecticidal proteins (Vip) produced by *Bacillus thuringiensis*. After ingestion, Cry toxins bind to specific midgut receptors — cadherins (CAD), aminopeptidase N (APN), and alkaline phosphatase (ALP) — triggering pore formation, osmotic lysis, and larval mortality.
 
 ### Bt toxin mode of action and resistance
-The sequential binding model of Bt intoxication involves: (1) proteolytic activation of the protoxin, (2) receptor binding at the brush border membrane, (3) oligomerization into a pre-pore complex, and (4) membrane insertion and ion channel formation. Field-evolved resistance in *Spodoptera* and *Helicoverpa* populations is predominantly driven by mutations in cadherin and ABCC transporter genes, often combined with reduced protoxin activation or altered midgut pH. Understanding which loci confer resistance — and which modalities reveal them first — is the core predictive task of this goal.
+The sequential binding model of Bt intoxication involves: (1) proteolytic activation of the protoxin, (2) receptor binding at the brush border membrane, (3) oligomerization into a pre-pore complex, and (4) membrane insertion and ion channel formation. Field-evolved resistance in *Spodoptera* and *Helicoverpa* populations is predominantly driven by mutations in cadherin and ABCC transporter genes, often combined with reduced protoxin activation or altered midgut pH. Understanding which loci confer resistance — and which modalities reveal them first — is a core predictive task of this goal. If we can get permission to add our bacterial toxin collection, we can add a protein-evolution/directed engineering effort in addition to searches for public data (I'm also interested in a small-molecule effector angle for research as well). 
 
 ### Why multi-modal data and why *Drosophila*
 No single data modality captures the full picture of Bt resistance: transcriptomics reveals cell-type-specific expression changes, population genomics identifies selection-swept loci, cell morphology captures phenotypic responses invisible to sequencing, and protein sequence encodes mechanistic binding determinants. *Drosophila melanogaster* is an ideal pre-training proxy because it shares deep midgut biology with pest species, has unparalleled public data resources (modENCODE, Fly Cell Atlas, DGRP2 — see Goal 3), and its genome is fully annotated with functional interaction data. Ortholog mapping via DIOPT enables direct weight transfer from a *Drosophila*-trained foundation to pest species with limited data.
+In-house, we also have the GeneStack/ODM metadata catalog and management layer, which will interface with DataFetch-Wizard to add refined tabular expression/variation/etc from our species/treatments of interest; these may be used sparingly for performance and evaluation purposes.
 
 ---
 
 ## Data Modality Table
+
+Note that other modalities/data are also available and could be considered/adopted after evaluation: RNAi screens, predictions from other labs, variant/resistance data, and so on. This list is currently aspirational rather than definitional or defining, as we're early in the stage of data assesment, acquisition and merging. For the Bt activity across species, good curated public data are sparse and a special literature scraping effort may be required (see https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-020-75932-7/MediaObjects/41598_2020_75932_MOESM1_ESM.xlsx for a list of papers used to construct their database, which can't be bulk-downloaded, only queried by UI calls).
+In general, data availability may constrain this version of the model, depending on whether we can access internal cell painting, variant-data or bacterial protein bioactivity (insect feeding assays, e.g.). I know we have a giant database of insecticidal protein structures for use with eg. ESM-2 as well; requesting access to that is currently on the roadmap.
 
 | Modality | Data type | Biological signal | Primary public sources | Expected volume | Preprocessing steps |
 |----------|-----------|-------------------|----------------------|-----------------|---------------------|
@@ -33,6 +37,18 @@ No single data modality captures the full picture of Bt resistance: transcriptom
 | Population genomics (resistant vs. sensitive) | VCF / allele frequency spectra | Resistance-associated loci, GWAS hits, selective sweep signatures | DGRP2 (205 *Dmel* lines), DPGP3, published *Helicoverpa/Plutella* WGS cohorts | ~200–1000 inbred lines per species | GATK genotyping → MAF filter → LD pruning → allele one-hot encoding |
 | Bt-toxin biochemical screening | IC50 / mortality curves, binary activity calls | Compound efficacy, receptor binding, cross-resistance | CryDatabase, NCBI BioAssay, published IC50 tables | ~500–5000 protein–insect pairs | Log-transform IC50 → percentile normalise per toxin family |
 | Insecticidal protein sequences (CRY, Vip, etc.) | Amino acid FASTA | Toxin family classification, binding domain prediction, novel candidate scoring | NCBI RefSeq CRY proteins, Bt Nomenclature Committee DB, UniProt `Toxin` keyword search | ~3000–8000 unique sequences | CD-HIT 90 % dedup → ESM-2 tokenisation → optional domain annotation (Pfam) |
+
+Selected data download sites:
+  https://resources.aertslab.org/DGRP2/list_of_files.txt
+  https://wiki.flybase.org/wiki/FlyBase:Drosophila_Online_Resources
+  https://www.ebi.ac.uk/gxa/sc/download
+  https://asap.epfl.ch/projects/v9ylud?view=data
+  https://db.cngb.org/stomics/flysta3d-v2/download/
+  https://flycellatlas.org/
+  https://flywire.ai/
+  https://db.cngb.org/stomics/datasets/?species=Drosophila%20melanogaster
+  https://bpprc-db.org/category_form
+
 
 ---
 
@@ -43,7 +59,7 @@ No single data modality captures the full picture of Bt resistance: transcriptom
                         │         Multi-Modal Fusion Head              │
                         │  (cross-attention or concatenation MLP)      │
                         │                                              │
-                        │  [CLS_rna] [CLS_img] [CLS_pop] [CLS_bt]     │
+                        │  [CLS_rna] [CLS_img] [CLS_pop] [CLS_bt]      │
                         │       [CLS_prot]  → linear → logits          │
                         └────────────┬─────────────────────────────────┘
            ┌────────────┬────────────┼────────────┬───────────────┐
@@ -68,7 +84,7 @@ No single data modality captures the full picture of Bt resistance: transcriptom
 
 ### Fusion strategy options
 
-- **Option A — Late fusion (baseline):** Concatenate all five CLS tokens → 2-layer MLP head. Simple to implement; no cross-modality interaction during encoding.
+- **Option A — Late fusion (baseline):** Concatenate all five CLS tokens → 2-layer MLP head. Simple to implement; no cross-modality interaction during encoding. We will deploy this initially and consider the other options as our data/model becomes clearer.
 - **Option B — Cross-attention fusion (preferred):** CLS tokens from each tower act as queries; each tower's full sequence of tokens acts as keys/values. Enables the model to attend to which modality provides the most discriminative signal per sample. Adds interpretability via attention weight inspection.
 - **Option C — Mixture-of-Experts (MoE) gate:** A learned router assigns per-sample weights to each tower's contribution before pooling. Useful when some modalities are missing for a given sample (common in practice).
 

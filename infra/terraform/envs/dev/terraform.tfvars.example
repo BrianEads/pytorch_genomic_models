@@ -1,0 +1,13 @@
+# DFW dev/testing AWS account — data-fetch-wizard staging target
+# Repo: https://github.com/bayer-int/cs-cp-bifx-data-fetch-wizard
+
+aws_region        = "us-east-1"
+project_name      = "pytorch-genomic"
+environment       = "dev"
+s3_dataset_bucket = "cs-cp-bifx-dfw-pytorch-genomic-data"
+s3_raw_prefix     = "raw/"
+s3_tokenised_prefix = "tokenised/"
+s3_manifests_prefix = "manifests/"
+budget_alert_usd  = 100
+alert_email       = "your-team@example.com"
+key_pair_name     = ""

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RnaseqSampleMetadata",
+  "description": "Per-sample metadata for bulk RNA-seq curation and midgut tissue filtering",
+  "type": "object",
+  "required": ["sample_id", "tissue"],
+  "properties": {
+    "sample_id": {
+      "type": "string",
+      "description": "Sample identifier matching a column name in the TPM matrix"
+    },
+    "tissue": {
+      "type": "string",
+      "description": "Anatomical tissue label (e.g. midgut, fat body, brain)"
+    },
+    "stage": {
+      "type": "string",
+      "description": "Developmental stage (e.g. adult, L3 larva)"
+    },
+    "treatment": {
+      "type": "string",
+      "description": "Experimental treatment or control condition"
+    },
+    "replicate": {
+      "type": "string",
+      "description": "Biological replicate identifier within a condition"
+    },
+    "source": {
+      "type": "string",
+      "description": "Dataset origin (e.g. modencode, flybase)"
+    }
+  }
+}

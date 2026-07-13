@@ -1,0 +1,24 @@
+# Kept in sync with [project.dependencies] in pyproject.toml.
+# Install with uv (recommended):
+#   uv venv && uv sync
+# Or pip:
+#   pip install -r requirements.txt
+#
+# Optional extras (see pyproject.toml [project.optional-dependencies]):
+#   uv sync --extra pipelines   # Goal 3 curation pipelines
+#   uv sync --extra midgut      # Goal 2 training stack
+#   uv sync --extra all         # pipelines + midgut
+#
+# Dev tools (pytest, nbstripout, black, isort) install via:
+#   uv sync                     # [dependency-groups] dev (default-groups)
+
+biopython>=1.83
+h5py>=3.10
+jsonschema>=4.20
+matplotlib>=3.8
+numpy>=1.26
+pandas>=2.1
+pyyaml>=6.0
+scikit-learn>=1.4
+seaborn>=0.13
+torch>=2.1

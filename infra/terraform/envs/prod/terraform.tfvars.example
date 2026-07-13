@@ -1,0 +1,7 @@
+aws_region        = "us-east-1"
+project_name      = "pytorch-genomic"
+environment       = "prod"
+s3_dataset_bucket = "pytorch-genomic-datasets"
+budget_alert_usd  = 500
+alert_email       = "your-team@example.com"
+key_pair_name     = ""

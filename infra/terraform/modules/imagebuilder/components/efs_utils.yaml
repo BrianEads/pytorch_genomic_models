@@ -1,0 +1,11 @@
+name: efs-utils
+description: Install amazon-efs-utils for TLS IAM EFS mounts
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallEfsUtils
+        action: ExecuteBash
+        inputs:
+          commands:
+            - yum install -y amazon-efs-utils nfs-utils

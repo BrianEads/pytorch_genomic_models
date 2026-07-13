@@ -1,0 +1,14 @@
+# Goal 2 midgut training dependencies.
+# Prefer: uv sync --extra midgut
+# This file mirrors [project.optional-dependencies.midgut] in pyproject.toml
+# for environments not yet using uv.
+
+torch>=2.1
+torchvision>=0.16
+transformers>=4.36
+fair-esm>=2.0
+peft>=0.7
+torch-geometric>=2.4
+mlflow>=2.9
+optuna>=3.4
+wandb>=0.16

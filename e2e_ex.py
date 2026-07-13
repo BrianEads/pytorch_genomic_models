@@ -18,10 +18,10 @@ class SimpleGenomicClassifier(nn.Module):
             dummy_input = torch.zeros(1, seq_len, dtype=torch.long)
             dummy_embedded = self.embedding(dummy_input).permute(0, 2, 1)
             dummy_conv = self.conv1d(dummy_embedded)
-            pool_kernel_size = dummy_conv.shape[...](asc_slot://start-slot-232) # Global Max Pooling
+            pool_kernel_size = dummy_conv.shape[2]  # Global Max Pooling
             dummy_pool = nn.MaxPool1d(kernel_size=pool_kernel_size)(dummy_conv)
             dummy_flattened = self.flatten(dummy_pool)
-            flattened_size = dummy_flattened.shape[...](asc_slot://start-slot-234)
+            flattened_size = dummy_flattened.shape[1]
 
         self.linear = nn.Linear(flattened_size, 1)
         self.sigmoid = nn.Sigmoid()
@@ -33,7 +33,7 @@ class SimpleGenomicClassifier(nn.Module):
         x = self.relu(x)
         
         # Global Max Pooling
-        pool_kernel_size = x.shape[...](asc_slot://start-slot-236)
+        pool_kernel_size = x.shape[2]
         x = nn.MaxPool1d(kernel_size=pool_kernel_size)(x)
         
         x = self.flatten(x) # (B, C_out, 1) -> (B, C_out)
@@ -46,7 +46,7 @@ def generate_synthetic_data(num_samples=1000, seq_len=101):
     # Vocab: 0=PAD, 1=A, 2=C, 3=G, 4=T
     sequences = np.random.randint(1, 5, size=(num_samples, seq_len))
     # Labels: 1 if '123' (ACG) is in the sequence, 0 otherwise
-    labels = np.array([1 if any(np.array_equal(sequences[i, j:j+3], [...](asc_slot://start-slot-238)) for j in range(seq_len - 2)) else 0 for i in range(num_samples)])
+    labels = np.array([1 if any(np.array_equal(sequences[i, j:j+3], [1, 2, 3]) for j in range(seq_len - 2)) else 0 for i in range(num_samples)])
     return torch.tensor(sequences, dtype=torch.long), torch.tensor(labels, dtype=torch.float32).unsqueeze(1)
 
 # --- 3. Training Loop ---

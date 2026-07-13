@@ -1,0 +1,80 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pytorch-genomic-models"
+version = "0.1.0"
+description = "PyTorch genomic and multi-modal models for agricultural pest control research"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "biopython>=1.83",
+    "h5py>=3.10",
+    "jsonschema>=4.20",
+    "matplotlib>=3.8",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pyyaml>=6.0",
+    "scikit-learn>=1.4",
+    "seaborn>=0.13",
+    "torch>=2.1",
+]
+
+[project.optional-dependencies]
+# Goal 3 curation pipelines (alias: curation)
+pipelines = [
+    "pysam>=0.22",
+    "pyranges>=0.0.142",
+    "scanpy>=1.10",
+    "scrublet>=0.2",
+    "torch-geometric>=2.5",
+]
+curation = [
+    "pysam>=0.22",
+    "pyranges>=0.0.142",
+    "scanpy>=1.10",
+    "scrublet>=0.2",
+    "torch-geometric>=2.5",
+]
+# Goal 2 midgut multi-modal training
+midgut = [
+    "torch>=2.1",
+    "torchvision>=0.16",
+    "transformers>=4.36",
+    "fair-esm>=2.0",
+    "peft>=0.7",
+    "torch-geometric>=2.4",
+    "mlflow>=2.9",
+    "optuna>=3.4",
+    "wandb>=0.16",
+]
+all = [
+    "pytorch-genomic-models[pipelines,midgut]",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pre-commit>=3.6",
+    "nbstripout>=0.7",
+    "black>=23.0",
+    "isort>=5.12",
+]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["models", "data"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100

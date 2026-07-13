@@ -1,5 +1,9 @@
 # SKILLS.md — Agent Skills & Capabilities Reference
 
+> **Program phase:** M1 — Local validation · **Active gate:** P0 (DFW AWS apply paused)
+>
+> **Operational tracking:** [PLAN_GOAL5_oversight.md](PLAN_GOAL5_oversight.md) · **Decisions:** [DECISIONS.md](DECISIONS.md)
+
 ---
 
 ## Introduction
@@ -7,6 +11,20 @@
 This document maps each project goal to its dedicated agent, the skills that agent must exercise, and the conventions shared across all goals. It serves as the canonical reference for anyone (human or automated agent) who needs to understand the capability requirements of this project before invoking an agent or reviewing a pull request.
 
 A **skill** in this context is a discrete, testable capability: a combination of domain knowledge, tooling proficiency, and repeatable process that an agent can execute independently given the corresponding `PLAN_GOAL*.md` as input. Skills may span multiple goals; the dependency map in a later section clarifies ordering constraints.
+
+### Per-goal agent skill files
+
+Each goal agent has a dedicated Cursor skill under `skills/` with scope, branch, acceptance checklist, pause rules, and dependencies:
+
+| Goal | Skill path |
+|------|------------|
+| 1 | [skills/goal-1-docs-reformatter/SKILL.md](skills/goal-1-docs-reformatter/SKILL.md) |
+| 2 | [skills/goal-2-midgut-model/SKILL.md](skills/goal-2-midgut-model/SKILL.md) |
+| 3 | [skills/goal-3-dmel-curator/SKILL.md](skills/goal-3-dmel-curator/SKILL.md) |
+| 4 | [skills/goal-4-infra-provisioner/SKILL.md](skills/goal-4-infra-provisioner/SKILL.md) |
+| 5 | [skills/goal-5-orchestrator/SKILL.md](skills/goal-5-orchestrator/SKILL.md) |
+
+**Invocation:** read the goal's `PLAN_GOAL*.md` **and** its `skills/goal-*/SKILL.md` before starting work.
 
 ---
 
@@ -48,6 +66,7 @@ A **skill** in this context is a discrete, testable capability: a combination of
 | **Inputs** | `docs/1_masked_lang_model.mdmd`, `docs/2_kmer_pretraining.md`, `docs/3_fine_tuning.md`, `docs/4_attention_deep_dive.md`, `e2e_explorer.ipynb`, `README.md` |
 | **Outputs** | Renamed + reformatted docs (all `.md`), annotated `e2e_explorer.ipynb` with compute-load tables, reformatted `README.md` with Quick Start, `.pre-commit-config.yaml` with `nbstripout` hook |
 | **Success criteria** | All docs pass `markdownlint`; notebook parses with `nbformat.validate()`; no `asc_slot://` artefacts remain; every code cell in the notebook is preceded by a Markdown explainer cell |
+| **Skill file** | [skills/goal-1-docs-reformatter/SKILL.md](skills/goal-1-docs-reformatter/SKILL.md) |
 
 ---
 
@@ -62,6 +81,8 @@ A **skill** in this context is a discrete, testable capability: a combination of
 | **Inputs** | `PLAN_GOAL2_midgut_model.md`, pre-trained tower checkpoints (from Goal 3 or public sources), `data/manifests/*.json` |
 | **Outputs** | `models/midgut_multimodal/` (towers, fusion head, downstream heads, configs), `scripts/midgut/` training scripts, `tests/test_midgut_towers.py` |
 | **Success criteria** | All tower modules forward-pass without error on CPU with random input; fusion head produces correct output shape; unit tests pass; training script accepts `--config` and logs to MLflow |
+| **Skill file** | [skills/goal-2-midgut-model/SKILL.md](skills/goal-2-midgut-model/SKILL.md) |
+| **Pause rule** | Real GPU training blocked until M3 tokenised data + M4 cluster (P0 gate first) |
 
 ---
 
@@ -76,6 +97,8 @@ A **skill** in this context is a discrete, testable capability: a combination of
 | **Inputs** | `PLAN_GOAL3_dmel_data_curation.md`, raw data staged by `data-fetch-wizard` to `data/raw/` |
 | **Outputs** | `data/schemas/` (JSON schemas), `data/pipelines/` (QC + tokenisation scripts), `data/manifests/dmel_foundation_manifest.json`, `notebooks/dmel_foundation_pretraining.ipynb`, `tests/test_dmel_pipelines.py` |
 | **Success criteria** | Manifest validates against schema; genome tokenisation pipeline runs on a synthetic FASTA in < 5 s; unit tests pass; split assigner produces non-overlapping, non-empty splits |
+| **Skill file** | [skills/goal-3-dmel-curator/SKILL.md](skills/goal-3-dmel-curator/SKILL.md) |
+| **Pause rule** | No download code; real S3 pipeline runs blocked until P0/M2 |
 
 ---
 
@@ -90,6 +113,23 @@ A **skill** in this context is a discrete, testable capability: a combination of
 | **Inputs** | `PLAN_GOAL4_terraform_infra.md`, confirmed SSM parameter paths from Bayer platform team, existing AWS account with appropriate IAM permission boundary |
 | **Outputs** | `infra/terraform/` (Terraform modules wrapping Service Catalog), `infra/pcluster/` (ParallelCluster configs), `infra/imagebuilder/` (GPU AMI pipeline), `infra/scripts/` (Slurm job submission, teardown), `infra/README_infra.md` |
 | **Success criteria** | `terraform validate` passes; `terraform fmt --check` passes; `tflint --recursive` no errors; `checkov` no HIGH/CRITICAL; `pcluster` config dry-run validates; `on_node_start.sh` is idempotent; ImageBuilder pipeline publishes AMI ARN to SSM on first run |
+| **Skill file** | [skills/goal-4-infra-provisioner/SKILL.md](skills/goal-4-infra-provisioner/SKILL.md) |
+| **Pause rule** | **P0:** no `terraform apply` until user clears DFW AWS gate |
+
+---
+
+### `conductor`
+
+| Field | Detail |
+|-------|--------|
+| **Goal** | Goal 5 — Orchestration & Oversight |
+| **Branch** | `feat/goal-5-oversight` |
+| **Primary skills** | `documentation-writing`, program coordination |
+| **Secondary skills** | All registry skills (read-only oversight) |
+| **Inputs** | All `PLAN_GOAL*.md`, repo state on feature branches, user decisions |
+| **Outputs** | Updated `PLAN_GOAL5_oversight.md`, `MASTER_PLAN.md`, `DECISIONS.md`, `skills/goal-*/SKILL.md` |
+| **Success criteria** | Status board accurate; pause-points enforced; checklists match repo evidence; user has reviewed skill files before goal-agent invocation |
+| **Skill file** | [skills/goal-5-orchestrator/SKILL.md](skills/goal-5-orchestrator/SKILL.md) |
 
 ---
 
@@ -139,10 +179,13 @@ Cross-goal dependencies:
 ```
 
 **Recommended execution order:**
-1. Goal 1 (no dependencies; improves readability before other work begins)
-2. Goal 4 (no code dependencies; can run in parallel with Goal 3)
-3. Goal 3 (data curation; required before large-scale Goal 2 training)
-4. Goal 2 (model; depends on Goal 3 artefacts and Goal 4 infrastructure)
+1. Goal 5 (conductor) — maintain plans/skills; enforce P0 gate throughout
+2. Goal 1 (no dependencies; improves readability before other work begins)
+3. Goal 4 scaffold (lint/plan only while P0 active; apply after user clears gate)
+4. Goal 3 (data curation; local pipelines before M2; real data after DFW staging)
+5. Goal 2 (model; depends on Goal 3 artefacts and Goal 4 infrastructure for GPU scale)
+
+**Milestone gates:** M0 scaffolding → M1 local validation (current) → **P0 pause** → M2 DFW S3 → M3 tokenised → M4 cluster → M5 alpha eval. See [PLAN_GOAL5_oversight.md](PLAN_GOAL5_oversight.md).
 
 ---
 
@@ -183,6 +226,12 @@ All goals and agents must adhere to the following conventions.
 - `feat/goal-2-midgut-model`
 - `feat/goal-3-dmel-data-curation`
 - `feat/goal-4-terraform-infra`
+- `feat/goal-5-oversight`
+
+### Program pause-points (conductor-enforced)
+- **P0 — DFW AWS apply:** User not ready; Goal 4 stops at plan/lint; Goals 2–3 avoid assuming live S3 data
+- **P1 — DFW alpha eval:** Required before M5 end-to-end smoke
+- See [PLAN_GOAL5_oversight.md → Pause-Points](PLAN_GOAL5_oversight.md#pause-points)
 
 ### PR conventions
 - PR title: `[Goal N] <short description>`
@@ -200,7 +249,9 @@ Use the following template to create a Copilot agent request for any goal. Fill 
 
 Context:
 - Read `[PLAN_GOAL_FILE].md` at the repo root for full requirements, acceptance criteria, and step-by-step agent instructions.
+- Read `skills/goal-N-*/SKILL.md` for scope, pause rules, and acceptance checklist.
 - Read `SKILLS.md` for shared conventions and skill dependency ordering.
+- Read `PLAN_GOAL5_oversight.md` for current program phase and active gates (especially P0).
 - Branch: `[BRANCH_NAME]`
 
 Your task:

@@ -1,0 +1,29 @@
+# Generated data (staged by data-fetch-wizard, tokenised by curation pipelines)
+data/raw/
+data/tokenised/
+
+# Environment and secrets
+.env
+.envrc
+*.pem
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/

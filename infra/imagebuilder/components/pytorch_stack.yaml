@@ -1,0 +1,13 @@
+name: pytorch-stack
+description: Install PyTorch with CUDA 12.1
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallPyTorch
+        action: ExecuteBash
+        inputs:
+          commands:
+            - source /opt/miniconda/etc/profile.d/conda.sh
+            - conda activate pytorch-genomic
+            - pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121

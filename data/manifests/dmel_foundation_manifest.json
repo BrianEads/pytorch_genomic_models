@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "project": "pytorch_genomic_models",
+  "organism": "dmel",
+  "assembly": "dm6",
+  "v1_scope": {
+    "included_modalities": ["genome", "rnaseq", "ppi"],
+    "planned_modalities": ["dgrp2_vcf", "fca_scrna"],
+    "notes": "Ship incrementally; DGRP2 and Fly Cell Atlas added in v2 manifest entries."
+  },
+  "staging": {
+    "provider": "data-fetch-wizard",
+    "repository": "https://github.com/bayer-int/cs-cp-bifx-data-fetch-wizard",
+    "s3_bucket": "cs-cp-bifx-dfw-pytorch-genomic-data",
+    "s3_raw_prefix": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/raw/",
+    "s3_tokenised_prefix": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/tokenised/",
+    "s3_manifests_prefix": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/manifests/",
+    "s3_checkpoints_prefix": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/checkpoints/",
+    "local_raw_sync": "data/raw/",
+    "local_tokenised_sync": "data/tokenised/",
+    "local_manifests_sync": "data/manifests/",
+    "fetch_recipe": "data-fetch-wizard/recipes/dmel_foundation.yaml"
+  },
+  "modalities": {
+    "genome": {
+      "source": "flybase",
+      "format": "fasta",
+      "tokeniser": "kmer6",
+      "raw_path": "data/raw/dmel_dm6.fasta",
+      "s3_uri": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/raw/dmel_dm6.fasta",
+      "output_path": "data/tokenised/dmel_genome_kmers.h5",
+      "s3_output_uri": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/tokenised/dmel_genome_kmers.h5"
+    },
+    "rnaseq": {
+      "source": "modencode",
+      "format": "tsv_tpm",
+      "normalise": "log1p",
+      "raw_path": "data/raw/modencode_rnaseq_tpm.tsv",
+      "sample_metadata_path": "data/raw/modencode_rnaseq_samples.tsv",
+      "s3_uri": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/raw/modencode_rnaseq_tpm.tsv",
+      "midgut_filter": true,
+      "output_path": "data/tokenised/modencode_rnaseq_log1p.h5",
+      "s3_output_uri": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/tokenised/modencode_rnaseq_log1p.h5"
+    },
+    "ppi": {
+      "source": "droid",
+      "format": "tsv_edges",
+      "min_score": 0.7,
+      "raw_path": "data/raw/droid_ppi_edges.tsv",
+      "s3_uri": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/raw/droid_ppi_edges.tsv",
+      "output_path": "data/tokenised/dmel_ppi_graph.pt",
+      "s3_output_uri": "s3://cs-cp-bifx-dfw-pytorch-genomic-data/tokenised/dmel_ppi_graph.pt",
+      "node_features": "none",
+      "node_features_owner": "goal2_esm2"
+    }
+  },
+  "splits": { "train": 0.8, "val": 0.1, "test": 0.1 },
+  "split_strategy": "chromosome_held_out",
+  "fetch_recipe": "data-fetch-wizard/recipes/dmel_foundation.yaml"
+}

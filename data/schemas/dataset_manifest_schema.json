@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DatasetManifest",
+  "description": "Contract between data-fetch-wizard and pytorch_genomic_models curation pipelines",
+  "type": "object",
+  "required": ["schema_version", "project", "organism", "assembly", "modalities", "splits"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semantic version of this schema (e.g. '1.0')"
+    },
+    "project": {
+      "type": "string",
+      "description": "Repository or project name this manifest belongs to"
+    },
+    "organism": {
+      "type": "string",
+      "description": "NCBI taxonomy short name (e.g. 'dmel', 'cele', 'hsapiens')"
+    },
+    "assembly": {
+      "type": "string",
+      "description": "Genome assembly identifier (e.g. 'dm6', 'hg38')"
+    },
+    "modalities": {
+      "type": "object",
+      "description": "Map of modality name → modality config",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["source", "format"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Dataset origin label (e.g. 'flybase', 'modencode')"
+          },
+          "format": {
+            "type": "string",
+            "description": "Raw file format (e.g. 'fasta', 'tsv_tpm', 'vcf', 'tsv_edges')"
+          },
+          "tokeniser": {
+            "type": "string",
+            "description": "Tokenisation method to apply (e.g. 'kmer6', 'log1p', 'one_hot_allele')"
+          },
+          "normalise": {
+            "type": "string",
+            "description": "Optional normalisation step (e.g. 'log1p', 'z_score')"
+          },
+          "min_score": {
+            "type": "number",
+            "description": "Minimum confidence score for interaction data"
+          },
+          "raw_path": {
+            "type": "string",
+            "description": "Path to raw staged file(s) written by data-fetch-wizard"
+          },
+          "output_path": {
+            "type": "string",
+            "description": "Path where curation pipeline will write tokenised output"
+          }
+        }
+      }
+    },
+    "splits": {
+      "type": "object",
+      "required": ["train", "val", "test"],
+      "properties": {
+        "train": { "type": "number", "minimum": 0, "maximum": 1 },
+        "val": { "type": "number", "minimum": 0, "maximum": 1 },
+        "test": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "description": "Fractional split proportions; must sum to 1.0"
+    },
+    "split_strategy": {
+      "type": "string",
+      "enum": ["chromosome_held_out", "sample_held_out", "random"],
+      "description": "How to assign items to splits without data leakage"
+    },
+    "fetch_recipe": {
+      "type": "string",
+      "description": "Relative path to the data-fetch-wizard recipe YAML that produces the raw_path files"
+    }
+  }
+}

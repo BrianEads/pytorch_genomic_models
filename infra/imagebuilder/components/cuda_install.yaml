@@ -1,0 +1,11 @@
+name: cuda-install
+description: Install CUDA 12.1 and cuDNN 8
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallCuda
+        action: ExecuteBash
+        inputs:
+          commands:
+            - yum install -y cuda-toolkit-12-1 libcudnn8

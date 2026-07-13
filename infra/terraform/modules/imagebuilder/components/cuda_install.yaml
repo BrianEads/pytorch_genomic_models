@@ -1,0 +1,13 @@
+name: cuda-install
+description: Install CUDA 12.1 and cuDNN 8 on Amazon Linux 2 GPU base
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallCuda
+        action: ExecuteBash
+        inputs:
+          commands:
+            - yum install -y cuda-toolkit-12-1 libcudnn8
+            - echo 'export PATH=/usr/local/cuda-12.1/bin:$PATH' >> /etc/profile.d/cuda.sh
+            - echo 'export LD_LIBRARY_PATH=/usr/local/cuda-12.1/lib64:$LD_LIBRARY_PATH' >> /etc/profile.d/cuda.sh

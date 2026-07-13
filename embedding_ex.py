@@ -13,7 +13,7 @@ embedding_layer = nn.Embedding(num_embeddings=vocab_size, embedding_dim=embeddin
 # --- 2. Example DNA Sequence ---
 # Let's represent the sequence "ACGT" as integer indices
 # This is our model's input
-dna_sequence_indices = torch.tensor() 
+dna_sequence_indices = torch.tensor([0, 1, 2, 3], dtype=torch.long)
 
 # --- 3. Apply Embedding ---
 # Pass the indices through the embedding layer
@@ -24,4 +24,4 @@ embedded_sequence = embedding_layer(dna_sequence_indices)
 # by a dense vector of size 'embedding_dim'.
 # Shape: (sequence_length, embedding_dim)
 print("Shape of embedded sequence:", embedded_sequence.shape)
-print("Embedded 'A':\n", embedded_sequence[...](asc_slot://start-slot-14))
+print("Embedded 'A':\n", embedded_sequence[0])

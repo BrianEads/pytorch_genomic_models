@@ -1,0 +1,12 @@
+name: miniconda-env
+description: Install Miniconda and create pytorch-genomic conda environment
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallMiniconda
+        action: ExecuteBash
+        inputs:
+          commands:
+            - curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/miniconda.sh
+            - bash /tmp/miniconda.sh -b -p /opt/miniconda
