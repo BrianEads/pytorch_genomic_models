@@ -160,8 +160,10 @@ def normalize_expression(tpm: pd.DataFrame) -> np.ndarray:
         Float32 array of shape (n_samples, n_genes).
     """
     log1p = np.log1p(tpm.to_numpy(dtype=np.float64))
-    gene_mean = log1p.mean(axis=0, keepdims=True)
-    gene_std = log1p.std(axis=0, ddof=0, keepdims=True)
+    # tpm/log1p are shaped (n_genes, n_samples). Per-gene z-scoring requires
+    # statistics across the samples axis (axis=1).
+    gene_mean = log1p.mean(axis=1, keepdims=True)
+    gene_std = log1p.std(axis=1, ddof=0, keepdims=True)
     gene_std = np.where(gene_std == 0, 1.0, gene_std)
     zscore = (log1p - gene_mean) / gene_std
     return zscore.T.astype(np.float32)

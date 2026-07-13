@@ -182,7 +182,7 @@ Reflect **actual** progress from prior agent sessions (uncommitted work on featu
 - [x] Create `skills/goal-*/SKILL.md` per-goal agent instructions
 - [x] Update `SKILLS.md` master index
 - [x] Create `DECISIONS.md` decision log
-- [ ] User review and edits to agent skill files
+- [x] User review and edits to agent skill files
 - [ ] Invoke goal agents against approved skills (post-review)
 - [ ] Track M2 gate clearance and update status board
 

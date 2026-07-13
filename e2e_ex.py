@@ -1,8 +1,9 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-import numpy as np
+
 
 # --- 1. Model Definition ---
 class SimpleGenomicClassifier(nn.Module):
