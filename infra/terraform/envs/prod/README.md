@@ -1,8 +1,8 @@
 # Prod environment
 
-Deploy production storage, EFS, ImageBuilder, and monitoring. Use the prod ParallelCluster config for multi-queue spot training.
+> **Pause-point P0:** Do **not** run `terraform apply` until the user explicitly clears the DFW AWS apply gate (see `PLAN_GOAL5_oversight.md`).
 
-## Prerequisites
+Deploy production storage, EFS, ImageBuilder, and monitoring. Use the prod ParallelCluster config for multi-queue spot training.
 
 Same as dev — see `infra/terraform/envs/dev/README.md` and `infra/README_infra.md`.
 
