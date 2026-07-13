@@ -1,19 +1,4 @@
-variable "project_name" {
-  type = string
-}
-
-variable "environment" {
-  type = string
-}
-
-variable "s3_dataset_bucket" {
-  type = string
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID from Service Catalog SSM parameter (used in bucket policy conditions)."
-}
+# Variables are defined in variables.tf
 
 locals {
   common_tags = {
