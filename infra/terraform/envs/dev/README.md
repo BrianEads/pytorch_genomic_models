@@ -1,8 +1,8 @@
 # Dev environment — DFW AWS account
 
-Deploy project storage, EFS, ImageBuilder, and monitoring into the **DFW dev/testing AWS account** provisioned for [data-fetch-wizard](https://github.com/bayer-int/cs-cp-bifx-data-fetch-wizard).
+> **Pause-point P0:** Do **not** run `terraform apply` until the user explicitly clears the DFW AWS apply gate (see `PLAN_GOAL5_oversight.md`). Planning/lint/validate-only work is allowed.
 
-Raw and tokenised datasets are staged in S3 in this account — not on local disk. Goal 3 curation pipelines read raw files from `s3://<bucket>/raw/` and write tokenised outputs to `s3://<bucket>/tokenised/`.
+Deploy project storage, EFS, ImageBuilder, and monitoring into the **DFW dev/testing AWS account** provisioned for [data-fetch-wizard](https://github.com/bayer-int/cs-cp-bifx-data-fetch-wizard).
 
 ## S3 layout (DFW account)
 
