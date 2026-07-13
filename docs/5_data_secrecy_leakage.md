@@ -1,13 +1,13 @@
 ## Design Objective: keep raw internal data out of the weights of a general/foundation genomics-language model.
 
-A model that is fine-tuned directly on secret sequence/structure/activity data can, in principle, leak it through:
+The approach is to create a chassis or general model against which we can evaluate (not train!) using our internal data. A model that is fine-tuned directly on secret sequence/structure/activity data can, in principle, leak it through:
 
 memorization
 model inversion / extraction
 membership inference
 high-similarity generations
 weight theft or internal misuse
-If your main goal is protein design from internal structure-function knowledge, the best risk-adjusted pattern is usually:
+As one of our main goals is protein design from internal structure-function knowledge, the best risk-adjusted pattern is usually:
 
 keep the public/foundation model frozen
 keep internal data in a separate private system
@@ -21,6 +21,9 @@ There is an unavoidable tradeoff:
 The more a model learns our private structure-function relationships,
 the more useful it becomes for design,
 but also the more it may encode information that can be extracted or approximated.
+
+*****
+
 No technical method makes this risk zero. The question is really:
 
 Where do you want the private information to live?
