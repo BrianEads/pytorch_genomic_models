@@ -26,7 +26,9 @@ PROJECT_NAME="${PROJECT_NAME:-pytorch-genomic}"
 if ! mountpoint -q /mnt/efs; then
   mkdir -p /mnt/efs
   mount -t efs -o tls,iam "${EFS_DNS}:/" /mnt/efs
-  echo "${EFS_DNS}:/ /mnt/efs efs tls,iam,_netdev 0 0" >> /etc/fstab
+  if ! grep -q "^${EFS_DNS}:/ /mnt/efs " /etc/fstab; then
+    echo "${EFS_DNS}:/ /mnt/efs efs tls,iam,_netdev 0 0" >> /etc/fstab
+  fi
 fi
 
 # 2. Sync DFW S3 datasets to EFS (head node only; compute nodes use shared EFS)
